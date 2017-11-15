@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+
+program
+  .command('alive [host]', 'is [host] alive?')
+  .command('ssllabs [host]', 'request SSL Labs analysis')
+  .parse(process.argv)

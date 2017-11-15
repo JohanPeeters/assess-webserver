@@ -1,0 +1,29 @@
+{
+  "name": "assess-webserver",
+  "version": "0.0.1",
+  "description": "Automate sanity tests for web servers on the public network.",
+  "main": "check-server.js",
+  "bin": {
+    "auth0-token": "./bin/check-server.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JohanPeeters/assess-webserver.git"
+  },
+  "keywords": [
+    "https"
+  ],
+  "author": "Johan Peeters",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JohanPeeters/assess-webserver/issues"
+  },
+  "homepage": "https://github.com/JohanPeeters/assess-webserver#readme",
+  "dependencies": {
+    "commander": "^2.11.0",
+    "polling-to-event": "^2.1.0"
+  }
+}

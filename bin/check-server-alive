@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+const https = require('https')
+
+program
+  .parse(process.argv)
+
+const host = program.args[0]
+
+const check = (host) => {
+  return new Promise(function(resolve, reject){
+    const options = {
+      hostname: host,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+    const req = https.request(options, (res) => {
+      res.setEncoding('utf8')
+      let rawData = ''
+      res.on('data', (chunk) => {rawData += chunk})
+      res.on('end', () => {
+        const statusCode = res.statusCode
+        if (statusCode == 200 && rawData) {
+          resolve(`${options.hostname} alive`)
+        } else {
+          let err = new Error(`alive check for ${host} failed with statusCode ${statusCode}`)
+          err.statusCode = statusCode
+          err.rawData = rawData
+          reject(err)
+        }
+      })
+    })
+    req.on('error', (e) => {
+      console.error(`problem with request: ${e.message}`)
+      reject(e)
+    })
+    req.end()
+  })
+}
+
+console.log(`checking ${host}`)
+check(host).then(function(result) {
+  console.log(result)
+},function(err){
+  console.log(err)
+})

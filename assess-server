@@ -4,5 +4,6 @@ const program = require('commander')
 
 program
   .command('legit [host]', 'is [host] a legit target for assessment?')
+  .command('https-only [host]', 'is [host] only available over HTTPS?')
   .command('ssllabs [host]', 'request SSL Labs analysis')
   .parse(process.argv)

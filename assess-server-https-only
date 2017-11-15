@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+const https = require('https')
+const makeGetRequest = require('./GetRequest').makeGetRequest
+
+program
+  .parse(process.argv)
+
+const host = program.args[0]
+
+const check = (host) => {
+  const config = {
+    protocol: 'http',
+    host: host,
+    path: '/',
+    successMsg: `FAIL: connected to ${host} over HTTP`,
+    failureMsg: `${host} is not available over HTTP`
+  }
+  return makeGetRequest(config)
+}
+
+check(host).then((result) => {
+  console.log(`\t${result}`)
+}).catch((err) => {
+  console.log(`\t${err}`)
+})

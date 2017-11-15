@@ -4,7 +4,7 @@
   "description": "Automate sanity tests for web servers on the public network.",
   "main": "check-server.js",
   "bin": {
-    "auth0-token": "./bin/check-server.js"
+    "assess-server": "./assess-server"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

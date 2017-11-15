@@ -3,7 +3,7 @@ const http = require('http')
 
 const makeGetRequest = (config) => {
   const {protocol, host, path, successMsg, failureMsg, expectedContent} = config
-  return new Promise(function(resolve, reject){
+  return new Promise((resolve, reject) => {
     const options = {
       hostname: host,
       method: 'GET',
@@ -37,7 +37,6 @@ const makeGetRequest = (config) => {
       })
     })
     req.on('error', (e) => {
-      console.error(`${failureMsg}\n\t${e.message}`)
       reject(e)
     })
     req.end()

@@ -13,11 +13,13 @@ const check = (host) => {
   const config = {
     protocol: 'http',
     host: host,
-    path: '/',
-    successMsg: `FAIL: connected to ${host} over HTTP`,
-    failureMsg: `${host} is not available over HTTP`
+    path: '/'
   }
-  return makeGetRequest(config)
+  return makeGetRequest(config).then((result) => {
+    return Promise.reject(`${host} is available over plain HTTP`)
+  }).catch((error) => {
+    return Promise.resolve(`${host} is not available over plain HTTP`)
+  })
 }
 
 check(host).then((result) => {

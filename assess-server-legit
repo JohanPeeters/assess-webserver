@@ -1,44 +1,17 @@
 #!/usr/bin/env node
 
 const program = require('commander')
-const makeGetRequest = require('./GetRequest').makeGetRequest
+const check = require('./LegitimacyCheck')
 
 program
-  .option('-r, --reachable', 'Is the server reachable? If selected, this is the only check.')
   .parse(process.argv)
 
 const host = program.args[0]
 
-const check = (host) => {
-  const aliveConfig = {
-    protocol: 'https',
-    host: host,
-    path: '/',
-    successMsg: `${host} is alive`,
-    failureMsg: `failed to connect to ${host}`
-  }
-  const aliveCheckPromise = makeGetRequest(aliveConfig)
-  let inviteCheckPromise
-  if (program.reachable) {
-    inviteCheckPromise = Promise.resolve(`assessment invitation for ${host} not checked`)
-  } else {
-    const inviteCheckConfig = {
-      protocol: 'https',
-      host: host,
-      path: '/assess_me',
-      successMsg: `${host} to be assessed`,
-      failureMsg: `${host} should not be assessed`,
-      expectedContent: host
-    }
-    inviteCheckPromise = makeGetRequest(inviteCheckConfig)
-  }
-  return Promise.all([aliveCheckPromise, inviteCheckPromise])
-}
-
-check(host).then(function(results) {
+check(host).then((results) => {
   results.forEach((result) => {
     console.log(`\t${result}`)
   })
-},function(err){
+}).catch((err) => {
   console.log(err)
 })

@@ -3,6 +3,6 @@
 const program = require('commander')
 
 program
-  .command('alive [host]', 'is [host] alive?')
+  .command('legit [host]', 'is [host] a legit target for assessment?')
   .command('ssllabs [host]', 'request SSL Labs analysis')
   .parse(process.argv)

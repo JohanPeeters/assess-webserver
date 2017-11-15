@@ -1,0 +1,84 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+const https = require('https')
+
+program
+  .option('-r, --reachable', 'Is the server reachable? If selected, this is the only check.')
+  .parse(process.argv)
+
+const host = program.args[0]
+
+const makeGetRequest = (config) => {
+  const {host, path, successMsg, failureMsg, expectedContent} = config
+  return new Promise(function(resolve, reject){
+    const options = {
+      hostname: host,
+      method: 'GET',
+      path: path,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+    const req = https.request(options, (res) => {
+      res.setEncoding('utf8')
+      let rawData = ''
+      res.on('data', (chunk) => {rawData += chunk})
+      res.on('end', () => {
+        const statusCode = res.statusCode
+        if (statusCode == 200) {
+          if (expectedContent) {
+            if (expectedContent != rawData) {
+                let err = new Error(`expected at https://${host}/${path}: ${expectedContent}`)
+                err.actualContent = rawData
+                reject(err)
+            }
+          }
+          resolve(successMsg)
+        } else {
+          let err = new Error(failureMsg)
+          err.statusCode = statusCode
+          err.rawData = rawData
+          reject(err)
+        }
+      })
+    })
+    req.on('error', (e) => {
+      console.error(`${failureMsg}\n\t${e.message}`)
+      reject(e)
+    })
+    req.end()
+  })
+}
+
+const check = (host) => {
+  const aliveConfig = {
+    host: host,
+    path: '/',
+    successMsg: `${host} is alive`,
+    failureMsg: `failed to connect to ${host}`
+  }
+  const aliveCheckPromise = makeGetRequest(aliveConfig)
+  let inviteCheckPromise
+  if (program.reachable) {
+    inviteCheckPromise = Promise.resolve(`assessment invitation for ${host} not checked`)
+  } else {
+    const inviteCheckConfig = {
+      host: host,
+      path: '/assess_me',
+      successMsg: `${host} to be assessed`,
+      failureMsg: `${host} should not be assessed`,
+      expectedContent: host
+    }
+    inviteCheckPromise = makeGetRequest(inviteCheckConfig)
+  }
+  return Promise.all([aliveCheckPromise, inviteCheckPromise])
+}
+
+check(host).then(function(results) {
+  results.forEach((result) => {
+    console.log(`\t${result}`)
+  })
+},function(err){
+  console.log(err)
+})

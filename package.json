@@ -1,6 +1,6 @@
 {
   "name": "assess-webserver",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Automate sanity tests for web servers on the public network.",
   "main": "check-server.js",
   "bin": {

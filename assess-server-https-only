@@ -9,7 +9,7 @@ program
 const host = program.args[0]
 
 check(host).then((result) => {
-  console.log(`\t${result}`)
+  console.log(`\t${result.msg}`)
 }).catch((err) => {
   console.log(`\t${err}`)
 })

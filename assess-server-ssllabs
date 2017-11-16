@@ -3,10 +3,13 @@
 const program = require('commander')
 const https = require('https')
 const pollingtoevent = require('polling-to-event')
+const makeGetRequest = require('./GetRequest').makeGetRequest
+
 
 program
   .option('-i, --info', 'check SSL Labs availability')
   .option('-a, --analyze', 'check [host] with SSL Labs')
+  .option('-v, --verbose', 'report progress')
   .parse(process.argv)
 
 const host = program.args[0]
@@ -15,42 +18,16 @@ let analyzeParams = '&startNew=on&all=done'
 const poll = (host) => {
   let apiCall = program.info?'info':`analyze?host=${host}${analyzeParams}`
   analyzeParams = ''
-  return new Promise(function(resolve, reject){
-    const options = {
-      hostname: 'api.ssllabs.com',
-      path: `/api/v2/${apiCall}`,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+  let config = {
+      protocol: 'https',
+      host: 'api.ssllabs.com',
+      path: `/api/v2/${apiCall}`
     }
-    const req = https.request(options, (res) => {
-      res.setEncoding('utf8')
-      let rawData = ''
-      res.on('data', (chunk) => {rawData += chunk})
-      res.on('end', () => {
-        const statusCode = res.statusCode
-        if (statusCode == 200 && rawData) {
-          let body = JSON.parse(rawData)
-          resolve(body)
-        } else {
-          let err = new Error('request to SSL Labs failed')
-          err.statusCode = statusCode
-          err.rawData = rawData
-          reject(err)
-        }
-      })
-    })
-    req.on('error', (e) => {
-      console.error(`problem with request: ${e.message}`)
-      reject(e)
-    })
-    req.end()
-  })
+  return makeGetRequest(config)
 }
 
 const check = (host) => {
-  console.log(`start polling ${host}`)
+  if (program.verbose) console.log(`start polling ${host}`)
   return new Promise(function(resolve, reject){
     let emitter = pollingtoevent((done) => {
       poll(host).then((result) => {
@@ -60,8 +37,10 @@ const check = (host) => {
       })
     }, {interval: 10000})
     emitter.on('poll', (data) => {
-      console.log(`status on ${host}: ${data.status}`)
-      if (program.info || data.status === 'READY' || data.status === 'ERROR') {
+      if (program.verbose) {
+        console.log(`status on ${host}: ${data.data.status}`)
+      }
+      if (program.info || data.data.status === 'READY' || data.data.status === 'ERROR') {
         emitter.clear()
         resolve(data)
       }
@@ -74,7 +53,7 @@ const check = (host) => {
 }
 
 check(host).then(function(result) {
-  let grades = result.endpoints.map((ep) => {
+  let grades = result.data.endpoints.map((ep) => {
     return ep.grade
   })
   console.log(grades)

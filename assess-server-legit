@@ -10,7 +10,7 @@ const host = program.args[0]
 
 Promise.all(check(host)).then((results) => {
   results.forEach((result) => {
-    console.log(`\t${result}`)
+    console.log(`\t${result.msg}`)
   })
 }).catch((err) => {
   console.log(err)

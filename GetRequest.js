@@ -27,7 +27,13 @@ const makeGetRequest = (config) => {
                 reject(err)
             }
           }
-          resolve(successMsg)
+          let body
+          try {
+            body = JSON.parse(rawData)
+          } catch (e) {
+            body = rawData
+          }
+          resolve({data: body, msg: successMsg})
         } else {
           let err = new Error(failureMsg)
           err.statusCode = statusCode

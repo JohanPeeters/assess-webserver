@@ -1,26 +1,12 @@
 #!/usr/bin/env node
 
 const program = require('commander')
-const https = require('https')
-const makeGetRequest = require('./GetRequest').makeGetRequest
+const check = require('./HTTPSOnlyCheck')
 
 program
   .parse(process.argv)
 
 const host = program.args[0]
-
-const check = (host) => {
-  const config = {
-    protocol: 'http',
-    host: host,
-    path: '/'
-  }
-  return makeGetRequest(config).then((result) => {
-    return Promise.reject(`${host} is available over plain HTTP`)
-  }).catch((error) => {
-    return Promise.resolve(`${host} is not available over plain HTTP`)
-  })
-}
 
 check(host).then((result) => {
   console.log(`\t${result}`)

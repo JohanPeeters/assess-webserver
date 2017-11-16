@@ -8,7 +8,7 @@ program
 
 const host = program.args[0]
 
-check(host).then((results) => {
+Promise.all(check(host)).then((results) => {
   results.forEach((result) => {
     console.log(`\t${result}`)
   })

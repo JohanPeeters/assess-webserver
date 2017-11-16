@@ -18,5 +18,5 @@ module.exports = (host) => {
       expectedContent: host
     }
   inviteCheckPromise = makeGetRequest(inviteCheckConfig)
-  return Promise.all([aliveCheckPromise, inviteCheckPromise])
+  return [aliveCheckPromise, inviteCheckPromise]
 }

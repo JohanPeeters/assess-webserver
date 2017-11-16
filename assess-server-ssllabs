@@ -1,58 +1,15 @@
 #!/usr/bin/env node
 
 const program = require('commander')
-const https = require('https')
-const pollingtoevent = require('polling-to-event')
-const makeGetRequest = require('./GetRequest').makeGetRequest
-
+const check = require('./SSLLabsCheck')
 
 program
-  .option('-i, --info', 'check SSL Labs availability')
-  .option('-a, --analyze', 'check [host] with SSL Labs')
   .option('-v, --verbose', 'report progress')
   .parse(process.argv)
 
 const host = program.args[0]
-let analyzeParams = '&startNew=on&all=done'
 
-const poll = (host) => {
-  let apiCall = program.info?'info':`analyze?host=${host}${analyzeParams}`
-  analyzeParams = ''
-  let config = {
-      protocol: 'https',
-      host: 'api.ssllabs.com',
-      path: `/api/v2/${apiCall}`
-    }
-  return makeGetRequest(config)
-}
-
-const check = (host) => {
-  if (program.verbose) console.log(`start polling ${host}`)
-  return new Promise(function(resolve, reject){
-    let emitter = pollingtoevent((done) => {
-      poll(host).then((result) => {
-        done(null, result)
-      }).catch((err) => {
-        done(err)
-      })
-    }, {interval: 10000})
-    emitter.on('poll', (data) => {
-      if (program.verbose) {
-        console.log(`status on ${host}: ${data.data.status}`)
-      }
-      if (program.info || data.data.status === 'READY' || data.data.status === 'ERROR') {
-        emitter.clear()
-        resolve(data)
-      }
-    })
-    emitter.on('error', (err, data) => {
-      emitter.clear()
-      reject(err)
-    })
-  })
-}
-
-check(host).then(function(result) {
+check(host, program.verbose).then(function(result) {
   let grades = result.data.endpoints.map((ep) => {
     return ep.grade
   })

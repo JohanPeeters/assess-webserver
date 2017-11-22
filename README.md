@@ -18,12 +18,5 @@ The utility is self-documenting:
 ```
 Note the difference between the name of the module and the command.
 
-Invoking `assess-server` with the `-h` or `--help` flag results in a list and brief description of the subcommands. In the current version, the only supported subcommands are `legit`, `https-only` and `all-checks`. The former tests whether the host is accepting HTTPS requests and consents in being assessed, e.g.
-```
-$ assess-server legit www.softwarewolves.net
-    www.softwarewolves.net is alive
-    www.softwarewolves.net to be assessed
-$
-```
-`https-only` tests whether the web app is also available over plain HTTP.
+Invoking `assess-server` with the `-h` or `--help` flag results in a list and brief description of the subcommands.
 `all-checks` combines all checks.

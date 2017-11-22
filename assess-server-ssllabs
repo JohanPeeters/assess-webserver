@@ -10,10 +10,7 @@ program
 const host = program.args[0]
 
 check(host, program.verbose).then(function(result) {
-  let grades = result.data.endpoints.map((ep) => {
-    return ep.grade
-  })
-  console.log(grades)
+  console.log(`\t${result.msg}`)
 }).catch(function(err){
-  console.log(err)
+  console.log(`\tfail: ${err}`)
 })

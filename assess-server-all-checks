@@ -3,6 +3,7 @@
 const program = require('commander')
 const legit = require('./LegitimacyCheck')
 const httpsOnly = require('./HTTPSOnlyCheck')
+const sslLabsCheck = require('./SSLLabsCheck')
 
 program
   .parse(process.argv)
@@ -22,7 +23,7 @@ const flatten = (arr, result = []) => {
 }
 
 const check = (host) => {
-  return Promise.all(flatten([legit(host), httpsOnly(host)]))
+  return Promise.all(flatten([legit(host), httpsOnly(host), sslLabsCheck(host)]))
 }
 
 check(host).then((results) => {

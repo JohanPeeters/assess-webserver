@@ -23,8 +23,15 @@ const flatten = (arr, result = []) => {
 }
 
 const check = (host) => {
-  return Promise.all(flatten([legit(host), httpsOnly(host), sslLabsCheck(host)]))
-}
+  return Promise.all(flatten(legit(host))).then((results) => {
+      results.forEach((result) => {
+        console.log(`\t${result.msg}`)
+      })
+      return Promise.all(flatten([httpsOnly(host), sslLabsCheck(host)]))
+    }).catch((err) => {
+      return Promise.reject(err)
+    })
+  }
 
 check(host).then((results) => {
   results.forEach((result) => {

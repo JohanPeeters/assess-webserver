@@ -12,7 +12,7 @@ module.exports = (host) => {
   let inviteCheckConfig = {
       protocol: 'https',
       host: host,
-      path: '/assess_me',
+      path: '/assess_me/',
       successMsg: `${host} to be assessed`,
       failureMsg: `${host} should not be assessed`,
       expectedContent: host

@@ -21,7 +21,7 @@ const makeGetRequest = (config) => {
         const statusCode = res.statusCode
         if (statusCode == 200) {
           if (expectedContent) {
-            if (expectedContent != rawData) {
+            if (expectedContent != rawData.trim()) {
                 let err = new Error(`expected at https://${host}/${path}: ${expectedContent}`)
                 err.actualContent = rawData
                 reject(err)
